@@ -40,6 +40,7 @@ export const WorkoutProvider = ({ children }) => {
             // Update the state with the newly created workoutID
             if (response.data && response.data.workoutID) {
                 setWorkoutID(response.data.workoutID);
+                setWorkoutSets([]);
                 console.log("Workout ID set: ", response.data.workoutID);
             } else {
                 console.error("Invalid response: ", response);

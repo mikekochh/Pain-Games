@@ -15,13 +15,14 @@ import Loading from '../components/LoadingComponent';
 const WorkoutScreen = () => {
   const [currentExercise, setCurrentExercise] = useState({}); // Active exercise
   const [modalVisible, setModalVisible] = useState(false); // Modal visibility
-  const { workoutID, workoutTime, workoutSets, setWorkoutSets, addSetsToWorkout } = useContext(WorkoutContext) || {};
+  const { workoutID, workoutTime, workoutSets, setWorkoutSets } = useContext(WorkoutContext) || {};
   const [exercises, setExercises] = useState(null);
   const [loading, setLoading] = useState(true);
 
+
   useEffect(() => {
     console.log("workoutSets: ", workoutSets);
-  }, [workoutSets]);  
+  }, [workoutSets]);
 
   useEffect(() => {
     if (exercises) {
@@ -36,9 +37,6 @@ const WorkoutScreen = () => {
     const fetchExercises = async () => {
       try {
         const response = await axios.get(API_BASE_URL + '/api/exercise/getExercises');
-
-        console.log('Fetch exercises: ', response.data);
-  
         if (response.data && response.data.data) {
           setExercises(response.data.data);
         } else {
@@ -65,27 +63,74 @@ const WorkoutScreen = () => {
 
   const handleSave = async (sets) => {
     try {
-      console.log("sets: ", sets);
-      console.log("currentExercise: ", currentExercise);
-      console.log("workoutID: ", workoutID);
-  
-      const response = await axios.post(API_BASE_URL + '/api/workout/addSets', {
-        userID: 1,
-        sets,
-        exerciseID: currentExercise.id,
-        workoutID
-      });
+      const newSets = sets.filter((set) => set.new);
 
-      if (response.status === 200 && response.data) {
-        console.log("Successfully added the sets!");
-        setModalVisible(false);
-        addSetsToWorkout(sets, currentExercise.id);
-        setCurrentExercise(null);
-      } else {
-        console.error("Unexpected response when saving sets: ", response);
-        alert("There was an issue saving your sets. Please try again");
+      const updatedSets = sets.filter((set) => set.updated && !set.new);
+
+      console.log("newSets: ", newSets);
+      console.log("updatedSets: ", updatedSets);
+
+      if (newSets.length > 0) {
+        const responseInsert = await axios.post(API_BASE_URL + '/api/workout/addSets', {
+          userID: 1,
+          sets: newSets,
+          exerciseID: currentExercise.id,
+          workoutID
+        });
+  
+        if (responseInsert.status === 200 && responseInsert.data) {
+          console.log("Successfully added the new sets");
+        }
+        else {
+          console.error('There was an issue inserting new sets');
+          return;
+        }
+      } 
+
+      if (updatedSets.length > 0) {
+        const responseUpdate = await axios.post(API_BASE_URL + '/api/workout/updateSets', {
+          updatedSets
+        });
+  
+        if (responseUpdate.status === 200 && responseUpdate.data) {
+          console.log("Successfully updated the sets!");
+        }
+        else {
+          console.error('There was an issue updating the sets');
+          return;
+        }
       }
 
+      setWorkoutSets((prevWorkoutSets) => {
+        // Update existing sets
+        const updatedWorkoutSets = prevWorkoutSets.map((set) => {
+          const updatedSet = updatedSets.find((updatedSet) => updatedSet.id === set.id);
+          if (updatedSet) {
+            return { 
+              ...updatedSet, 
+              exerciseID: currentExercise.id, // Add exerciseID to updated sets
+              new: false, 
+              updated: false // Reset flags
+            };
+          }
+          return set;
+        });
+      
+        console.log('updatedWorkoutSets: ', updatedWorkoutSets);
+        console.log('newSets: ', newSets);
+      
+        // Ensure each new set includes exerciseID and reset flags
+        const newSetsWithExerciseID = newSets.map((set) => ({
+          ...set,
+          exerciseID: currentExercise.id,
+          new: false,
+          updated: false // Reset flags for new sets
+        }));
+      
+        // Add new sets with exerciseID and reset flags
+        return [...updatedWorkoutSets, ...newSetsWithExerciseID];
+      });           
+      setModalVisible(false);
     } catch (error) {
       console.error("There was an error logging sets for workout: ", error);
       return;

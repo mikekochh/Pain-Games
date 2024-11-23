@@ -15,9 +15,9 @@ const AddExerciseModal = ({ visible, onClose, exercise, onSave }) => {
   const { workoutSets } = useContext(WorkoutContext) || {};
 
   const [sets, setSets] = useState([
-    { id: 1, reps: 0, weight: 0 },
-    { id: 2, reps: 0, weight: 0 },
-    { id: 3, reps: 0, weight: 0 },
+    { id: 1, reps: 0, weight: 0, new: true },
+    { id: 2, reps: 0, weight: 0, new: true },
+    { id: 3, reps: 0, weight: 0, new: true },
   ]);
 
   useEffect(() => {
@@ -28,13 +28,14 @@ const AddExerciseModal = ({ visible, onClose, exercise, onSave }) => {
         setSets(existingSets.map((set, index) => ({
           id: index + 1,
           reps: set.reps || 0,
-          weight: set.weight || 0
+          weight: set.weight || 0,
+          updated: false
         })));
       } else {
         setSets([
-          { id: 1, reps: 0, weight: 0 },
-          { id: 2, reps: 0, weight: 0 },
-          { id: 3, reps: 0, weight: 0 },
+          { id: 1, reps: 0, weight: 0, new: true },
+          { id: 2, reps: 0, weight: 0, new: true },
+          { id: 3, reps: 0, weight: 0, new: true },
         ]);
       }
     }
@@ -47,10 +48,12 @@ const AddExerciseModal = ({ visible, onClose, exercise, onSave }) => {
   const handleInputChange = (id, field, value) => {
     setSets((prevSets) =>
       prevSets.map((set) =>
-        set.id === id ? { ...set, [field]: value } : set
+        set.id === id 
+          ? { ...set, [field]: value, updated: true } 
+          : set
       )
     );
-  };
+  };  
 
   const addSet = () => {
     setSets((prevSets) => [
@@ -58,14 +61,13 @@ const AddExerciseModal = ({ visible, onClose, exercise, onSave }) => {
       {
         id: prevSets.length + 1,
         reps: 0,
-        weight: 0
+        weight: 0,
+        new: true
       },
     ]);
   };
-  
 
   const handleSave = () => {
-    console.log('Saving Exercise:', exercise.exercise_name, sets);
     onSave(sets);
     setSets(null);
   };

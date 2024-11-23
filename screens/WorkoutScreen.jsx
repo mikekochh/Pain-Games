@@ -10,13 +10,27 @@ import AddExerciseModal from '../components/modals/AddExerciseModal';
 import axios from 'axios';
 import { API_BASE_URL } from '../components/constants';
 import { WorkoutContext } from '../components/context/WorkoutProvider';
+import Loading from '../components/LoadingComponent';
 
 const WorkoutScreen = () => {
   const [currentExercise, setCurrentExercise] = useState({}); // Active exercise
   const [modalVisible, setModalVisible] = useState(false); // Modal visibility
-  const [sets, setSets] = useState([{}]); // An array of objects for sets (weight, reps)
-  const { workoutID, workoutTime } = useContext(WorkoutContext) || {};
+  const { workoutID, workoutTime, workoutSets, setWorkoutSets, addSetsToWorkout } = useContext(WorkoutContext) || {};
   const [exercises, setExercises] = useState(null);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    console.log("workoutSets: ", workoutSets);
+  }, [workoutSets]);  
+
+  useEffect(() => {
+    if (exercises) {
+      setLoading(false);
+    }
+    else {
+      setLoading(true);
+    }
+  }, [exercises])
 
   useEffect(() => {
     const fetchExercises = async () => {
@@ -49,14 +63,40 @@ const WorkoutScreen = () => {
     setModalVisible(true); // Open the modal
   };
 
-  const handleSave = async () => {
-    setModalVisible(false); // Close the modal
-    // send exerciseID, userID, and sets to backend
-    // send workoutID, exerciseID, userID, and sets to backend server
-    setWorkout();
+  const handleSave = async (sets) => {
+    try {
+      console.log("sets: ", sets);
+      console.log("currentExercise: ", currentExercise);
+      console.log("workoutID: ", workoutID);
+  
+      const response = await axios.post(API_BASE_URL + '/api/workout/addSets', {
+        userID: 1,
+        sets,
+        exerciseID: currentExercise.id,
+        workoutID
+      });
 
-    setSets(''); // Clear input
+      if (response.status === 200 && response.data) {
+        console.log("Successfully added the sets!");
+        setModalVisible(false);
+        addSetsToWorkout(sets, currentExercise.id);
+        setCurrentExercise(null);
+      } else {
+        console.error("Unexpected response when saving sets: ", response);
+        alert("There was an issue saving your sets. Please try again");
+      }
+
+    } catch (error) {
+      console.error("There was an error logging sets for workout: ", error);
+      return;
+    }
   };
+
+  if (loading) {
+    return (
+      <Loading loadingText='Starting Workout' />
+    )
+  }
 
   return (
     <View style={styles.container}>
@@ -67,19 +107,38 @@ const WorkoutScreen = () => {
       </View>
 
 
-      {/* Exercise List */}
       <Text style={styles.exercisesTitle}>Exercises</Text>
       <FlatList
         data={exercises}
-        // keyExtractor={(item) => item.id}
-        renderItem={({ item }) => (
-          <TouchableOpacity
-            style={styles.exerciseButton}
-            onPress={() => handleExerciseClick(item)}
-          >
-            <Text style={styles.exerciseText}>{item.exercise_name}</Text>
-          </TouchableOpacity>
-        )}
+        renderItem={({ item }) => {
+          // Check if the current exercise has sets in workoutSets
+          const exerciseSets = workoutSets.filter((set) => set.exerciseID === item.id);
+          const hasSets = exerciseSets.length > 0;
+
+          return (
+            <TouchableOpacity
+              style={[
+                styles.exerciseButton,
+                hasSets && styles.exerciseButtonHighlighted // Add highlighted style if sets exist
+              ]}
+              onPress={() => handleExerciseClick(item)}
+            >
+              <Text
+                style={[
+                  styles.exerciseText,
+                  hasSets && styles.exerciseTextHighlighted // Optional text highlight
+                ]}
+              >
+                {item.exercise_name}
+              </Text>
+              {hasSets && (
+                <Text style={styles.exerciseSetsText}>
+                  {exerciseSets.length} {exerciseSets.length === 1 ? 'set' : 'sets'}
+                </Text>
+              )}
+            </TouchableOpacity>
+          );
+        }}
         contentContainerStyle={styles.exerciseList}
       />
 
@@ -88,8 +147,6 @@ const WorkoutScreen = () => {
         visible={modalVisible}
         onClose={() => setModalVisible(false)}
         exercise={currentExercise}
-        sets={sets}
-        setSets={setSets}
         onSave={handleSave}
       />
     </View>
@@ -148,11 +205,22 @@ const styles = StyleSheet.create({
     shadowRadius: 4,
     elevation: 3,
   },
+  exerciseButtonHighlighted: {
+    backgroundColor: '#e6f7ff', // Light blue highlight
+    borderColor: '#007AFF', // Blue border for emphasis
+    borderWidth: 2,
+  },
   exerciseText: {
     fontSize: 16,
     fontWeight: '600',
     color: '#333',
   },
+  exerciseTextHighlighted: {
+    fontSize: 16,
+    fontWeight: 'bold',
+    color: '#007AFF', // Matches the highlighted border color
+  },
 });
+
 
 export default WorkoutScreen;

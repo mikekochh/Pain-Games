@@ -8,6 +8,7 @@ export const WorkoutContext = createContext(null);
 export const WorkoutProvider = ({ children }) => {
     const [workoutID, setWorkoutID] = useState(null);
     const [workoutTime, setWorkoutTime] = useState(0);
+    const [workoutSets, setWorkoutSets] = useState([]);
 
     useEffect(() => {
         if (workoutID) {
@@ -24,8 +25,6 @@ export const WorkoutProvider = ({ children }) => {
             return () => clearInterval(workoutTimer);
         }
     }, [workoutID]);
-    
-
 
     const startWorkout = async (userID) => {
         try {
@@ -50,21 +49,27 @@ export const WorkoutProvider = ({ children }) => {
         }
     };
 
+    const addSetsToWorkout = (sets, exerciseID) => {
+        setWorkoutSets((prevWorkoutSets) => [
+            ...prevWorkoutSets,
+            ...sets.map((set) => ({ ...set, exerciseID }))
+        ]);
+    };
+    
+
     const endWorkout = async () => {
         setWorkoutID(null);
         setWorkoutTime(0);
-    }
-    
-
-    const addSets = () => {
-
     }
 
     return (
         <WorkoutContext.Provider value={{
             workoutID,
             workoutTime,
-            startWorkout
+            workoutSets,
+            startWorkout,
+            addSetsToWorkout,
+            setWorkoutSets
         }}>
             {children}
         </WorkoutContext.Provider>

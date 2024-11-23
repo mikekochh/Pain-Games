@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useContext, useEffect } from 'react';
 import {
   View,
   Text,
@@ -8,13 +8,41 @@ import {
   Modal,
   FlatList,
 } from 'react-native';
+import { WorkoutContext } from '../context/WorkoutProvider';
 
 const AddExerciseModal = ({ visible, onClose, exercise, onSave }) => {
+
+  const { workoutSets } = useContext(WorkoutContext) || {};
+
   const [sets, setSets] = useState([
     { id: 1, reps: 0, weight: 0 },
     { id: 2, reps: 0, weight: 0 },
     { id: 3, reps: 0, weight: 0 },
   ]);
+
+  useEffect(() => {
+    const populateExistingSets = () => {
+      const existingSets = workoutSets.filter((set) => set.exerciseID === exercise.id);
+
+      if (existingSets.length > 0) {
+        setSets(existingSets.map((set, index) => ({
+          id: index + 1,
+          reps: set.reps || 0,
+          weight: set.weight || 0
+        })));
+      } else {
+        setSets([
+          { id: 1, reps: 0, weight: 0 },
+          { id: 2, reps: 0, weight: 0 },
+          { id: 3, reps: 0, weight: 0 },
+        ]);
+      }
+    }
+
+    if (workoutSets.length > 0 && exercise) {
+      populateExistingSets();
+    }
+  }, [workoutSets, exercise])
 
   const handleInputChange = (id, field, value) => {
     setSets((prevSets) =>
@@ -27,14 +55,19 @@ const AddExerciseModal = ({ visible, onClose, exercise, onSave }) => {
   const addSet = () => {
     setSets((prevSets) => [
       ...prevSets,
-      { id: prevSets.length + 1, reps: '', weight: '' },
+      {
+        id: prevSets.length + 1,
+        reps: 0,
+        weight: 0
+      },
     ]);
   };
+  
 
   const handleSave = () => {
     console.log('Saving Exercise:', exercise.exercise_name, sets);
     onSave(sets);
-    onClose();
+    setSets(null);
   };
 
   return (
@@ -46,49 +79,48 @@ const AddExerciseModal = ({ visible, onClose, exercise, onSave }) => {
     >
       <View style={styles.modalOverlay}>
         <View style={styles.modalContainer}>
+          {/* Close Button */}
+          <TouchableOpacity style={styles.closeButton} onPress={onClose}>
+            <Text style={styles.closeButtonText}>X</Text>
+          </TouchableOpacity>
+
+          {/* Modal Title */}
           <Text style={styles.modalTitle}>{exercise?.exercise_name}</Text>
+
+          {/* List of Sets */}
           <FlatList
             data={sets}
             keyExtractor={(item) => item.id.toString()}
             renderItem={({ item, index }) => (
-                <View style={styles.setRow}>
+              <View style={styles.setRow}>
                 <Text style={styles.number}>{index + 1}.</Text>
                 <TextInput
-                    style={[styles.input, styles.repsInput]}
-                    placeholder="Reps"
-                    keyboardType="numeric"
-                    value={item.reps}
-                    onChangeText={(value) =>
-                    handleInputChange(item.id, 'reps', value)
-                    }
+                  style={[styles.input, styles.repsInput]}
+                  placeholder="Reps"
+                  keyboardType="numeric"
+                  value={item.reps}
+                  onChangeText={(value) => handleInputChange(item.id, 'reps', value)}
                 />
                 <TextInput
-                    style={[styles.input, styles.weightInput]}
-                    placeholder="Weight (lbs)"
-                    keyboardType="numeric"
-                    value={item.weight}
-                    onChangeText={(value) =>
-                    handleInputChange(item.id, 'weight', value)
-                    }
+                  style={[styles.input, styles.weightInput]}
+                  placeholder="Weight (lbs)"
+                  keyboardType="numeric"
+                  value={item.weight}
+                  onChangeText={(value) => handleInputChange(item.id, 'weight', value)}
                 />
-                </View>
+              </View>
             )}
-            />
+            ListFooterComponent={
+              <TouchableOpacity style={styles.addButton} onPress={addSet}>
+                <Text style={styles.addButtonText}>+ Add Set</Text>
+              </TouchableOpacity>
+            }
+          />
 
-
-          <TouchableOpacity style={styles.addButton} onPress={addSet}>
-            <Text style={styles.addButtonText}>+ Add Set</Text>
-          </TouchableOpacity>
-
+          {/* Save Button */}
           <View style={styles.modalButtons}>
             <TouchableOpacity style={styles.saveButton} onPress={handleSave}>
               <Text style={styles.saveButtonText}>Save</Text>
-            </TouchableOpacity>
-            <TouchableOpacity
-              style={styles.cancelButton}
-              onPress={onClose}
-            >
-              <Text style={styles.cancelButtonText}>Cancel</Text>
             </TouchableOpacity>
           </View>
         </View>
@@ -103,7 +135,7 @@ const styles = StyleSheet.create({
     backgroundColor: 'rgba(0, 0, 0, 0.5)',
   },
   number: {
-    paddingRight: 10
+    paddingRight: 10,
   },
   modalContainer: {
     flex: 1,
@@ -145,12 +177,12 @@ const styles = StyleSheet.create({
     flex: 2,
   },
   addButton: {
-    marginTop: 10,
+    marginVertical: 10, // Adjusted for proper spacing above and below
     alignSelf: 'center',
     padding: 10,
     backgroundColor: '#007AFF',
     borderRadius: 5,
-  },
+  },  
   addButtonText: {
     color: '#fff',
     fontWeight: 'bold',
@@ -185,6 +217,25 @@ const styles = StyleSheet.create({
     textAlign: 'center',
     fontWeight: 'bold',
   },
+  closeButton: {
+    position: 'absolute',
+    top: 10,
+    right: 10,
+    zIndex: 10,
+    backgroundColor: '#fff',
+    width: 30,
+    height: 30,
+    borderRadius: 15,
+    justifyContent: 'center',
+    alignItems: 'center',
+    elevation: 5, // Shadow effect
+  },
+  closeButtonText: {
+    fontSize: 18,
+    fontWeight: 'bold',
+    color: '#333',
+  },
 });
+
 
 export default AddExerciseModal;

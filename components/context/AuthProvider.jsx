@@ -41,7 +41,7 @@ export const AuthProvider = ({ children }) => {
           userID: user.id,
           inProgress: true
         });
-        navigation.replace('StartWorkout');
+        navigation.replace('Workout');
       } else {
         const errorData = await response.json();
         Alert.alert('Starting new workout failed', errorData.message);

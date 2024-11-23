@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useContext } from 'react';
 import {
   View,
   Text,
@@ -7,30 +7,36 @@ import {
   TouchableOpacity,
 } from 'react-native';
 import AddExerciseModal from '../components/modals/AddExerciseModal';
+import axios from 'axios';
+import { API_BASE_URL } from '../components/constants';
+import { WorkoutContext } from '../components/context/WorkoutProvider';
 
-const StartWorkoutScreen = () => {
-  const [workoutTime, setWorkoutTime] = useState(0); // Total workout timer
-  const [currentExercise, setCurrentExercise] = useState(null); // Active exercise
+const WorkoutScreen = () => {
+  const [currentExercise, setCurrentExercise] = useState({}); // Active exercise
   const [modalVisible, setModalVisible] = useState(false); // Modal visibility
-  const [weight, setWeight] = useState(''); // Input for weight
-  const [sets, setSets] = useState(''); // Input for sets
-
-  // Dummy data for exercises
-  const exercises = [
-    { id: '1', name: 'Bench Press' },
-    { id: '2', name: 'Deadlift' },
-    { id: '3', name: 'Squat' },
-    { id: '4', name: 'Pull-Ups' },
-    { id: '5', name: 'Overhead Press' },
-  ];
+  const [sets, setSets] = useState([{}]); // An array of objects for sets (weight, reps)
+  const { workoutID, workoutTime } = useContext(WorkoutContext) || {};
+  const [exercises, setExercises] = useState(null);
 
   useEffect(() => {
-    const workoutTimer = setInterval(() => {
-      setWorkoutTime((prevTime) => prevTime + 1);
-    }, 1000);
+    const fetchExercises = async () => {
+      try {
+        const response = await axios.get(API_BASE_URL + '/api/exercise/getExercises');
 
-    return () => clearInterval(workoutTimer); // Cleanup timer
-  }, []);
+        console.log('Fetch exercises: ', response.data);
+  
+        if (response.data && response.data.data) {
+          setExercises(response.data.data);
+        } else {
+          console.error('Unexpected response format: ', response);
+        }
+      } catch (error) {
+        console.error("There was an error fetching the exercises: ", error);
+      }
+    }
+
+    fetchExercises();
+  }, [])
 
   const formatTime = (seconds) => {
     const mins = Math.floor(seconds / 60);
@@ -39,14 +45,16 @@ const StartWorkoutScreen = () => {
   };
 
   const handleExerciseClick = (exercise) => {
-    setCurrentExercise(exercise.name);
+    setCurrentExercise(exercise);
     setModalVisible(true); // Open the modal
   };
 
-  const handleSave = () => {
-    console.log(`Exercise: ${currentExercise}, Weight: ${weight}, Sets: ${sets}`);
+  const handleSave = async () => {
     setModalVisible(false); // Close the modal
-    setWeight(''); // Clear input
+    // send exerciseID, userID, and sets to backend
+    // send workoutID, exerciseID, userID, and sets to backend server
+    setWorkout();
+
     setSets(''); // Clear input
   };
 
@@ -58,25 +66,18 @@ const StartWorkoutScreen = () => {
         <Text style={styles.timer}>{formatTime(workoutTime)}</Text>
       </View>
 
-      {/* Current Exercise */}
-      {currentExercise && (
-        <View style={styles.currentExerciseContainer}>
-          <Text style={styles.currentExerciseLabel}>Current Exercise:</Text>
-          <Text style={styles.currentExercise}>{currentExercise}</Text>
-        </View>
-      )}
 
       {/* Exercise List */}
-      <Text style={styles.exercisesTitle}>Available Exercises</Text>
+      <Text style={styles.exercisesTitle}>Exercises</Text>
       <FlatList
         data={exercises}
-        keyExtractor={(item) => item.id}
+        // keyExtractor={(item) => item.id}
         renderItem={({ item }) => (
           <TouchableOpacity
             style={styles.exerciseButton}
             onPress={() => handleExerciseClick(item)}
           >
-            <Text style={styles.exerciseText}>{item.name}</Text>
+            <Text style={styles.exerciseText}>{item.exercise_name}</Text>
           </TouchableOpacity>
         )}
         contentContainerStyle={styles.exerciseList}
@@ -86,9 +87,7 @@ const StartWorkoutScreen = () => {
       <AddExerciseModal
         visible={modalVisible}
         onClose={() => setModalVisible(false)}
-        exerciseName={currentExercise}
-        weight={weight}
-        setWeight={setWeight}
+        exercise={currentExercise}
         sets={sets}
         setSets={setSets}
         onSave={handleSave}
@@ -156,4 +155,4 @@ const styles = StyleSheet.create({
   },
 });
 
-export default StartWorkoutScreen;
+export default WorkoutScreen;

@@ -9,11 +9,11 @@ import {
   FlatList,
 } from 'react-native';
 
-const AddExerciseModal = ({ visible, onClose, exerciseName, onSave }) => {
+const AddExerciseModal = ({ visible, onClose, exercise, onSave }) => {
   const [sets, setSets] = useState([
-    { id: 1, reps: '', weight: '' },
-    { id: 2, reps: '', weight: '' },
-    { id: 3, reps: '', weight: '' },
+    { id: 1, reps: 0, weight: 0 },
+    { id: 2, reps: 0, weight: 0 },
+    { id: 3, reps: 0, weight: 0 },
   ]);
 
   const handleInputChange = (id, field, value) => {
@@ -32,7 +32,7 @@ const AddExerciseModal = ({ visible, onClose, exerciseName, onSave }) => {
   };
 
   const handleSave = () => {
-    console.log('Saving Exercise:', exerciseName, sets);
+    console.log('Saving Exercise:', exercise.exercise_name, sets);
     onSave(sets);
     onClose();
   };
@@ -46,8 +46,7 @@ const AddExerciseModal = ({ visible, onClose, exerciseName, onSave }) => {
     >
       <View style={styles.modalOverlay}>
         <View style={styles.modalContainer}>
-          <Text style={styles.modalTitle}>{exerciseName}</Text>
-
+          <Text style={styles.modalTitle}>{exercise?.exercise_name}</Text>
           <FlatList
             data={sets}
             keyExtractor={(item) => item.id.toString()}

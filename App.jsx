@@ -5,7 +5,8 @@ import { createStackNavigator } from '@react-navigation/stack';
 import { View, Text, StyleSheet } from 'react-native';
 import Icon from 'react-native-vector-icons/Ionicons';
 import HomeScreen from './screens/HomeScreen';
-import StartWorkoutScreen from './screens/StartWorkoutScreen';
+import WorkoutScreen from './screens/WorkoutScreen';
+import { WorkoutProvider } from './components/context/WorkoutProvider';
 
 // Placeholder Screens
 const ProgressScreen = () => (
@@ -39,7 +40,7 @@ function HomeStackScreen() {
   return (
     <HomeStack.Navigator screenOptions={{ headerShown: false }}>
       <HomeStack.Screen name="HomeMain" component={HomeScreen} />
-      <HomeStack.Screen name="StartWorkout" component={StartWorkoutScreen} />
+      <HomeStack.Screen name="Workout" component={WorkoutScreen} />
     </HomeStack.Navigator>
   );
 }
@@ -49,41 +50,43 @@ const Tab = createBottomTabNavigator();
 
 export default function App() {
   return (
-    <NavigationContainer>
-      <Tab.Navigator
-        initialRouteName="Home"
-        screenOptions={({ route }) => ({
-          headerShown: false,
-          tabBarStyle: styles.tabBar,
-          tabBarLabelStyle: styles.tabBarLabel,
-          tabBarIcon: ({ focused, color, size }) => {
-            let iconName;
+    <WorkoutProvider>
+      <NavigationContainer>
+        <Tab.Navigator
+          initialRouteName="Home"
+          screenOptions={({ route }) => ({
+            headerShown: false,
+            tabBarStyle: styles.tabBar,
+            tabBarLabelStyle: styles.tabBarLabel,
+            tabBarIcon: ({ focused, color, size }) => {
+              let iconName;
 
-            if (route.name === 'Home') {
-              iconName = focused ? 'home' : 'home-outline';
-            } else if (route.name === 'Progress') {
-              iconName = focused ? 'barbell' : 'barbell-outline';
-            } else if (route.name === 'Exercises') {
-              iconName = focused ? 'fitness' : 'fitness-outline';
-            } else if (route.name === 'History') {
-              iconName = focused ? 'time' : 'time-outline';
-            } else if (route.name === 'Profile') {
-              iconName = focused ? 'person' : 'person-outline';
-            }
+              if (route.name === 'Home') {
+                iconName = focused ? 'home' : 'home-outline';
+              } else if (route.name === 'Progress') {
+                iconName = focused ? 'barbell' : 'barbell-outline';
+              } else if (route.name === 'Exercises') {
+                iconName = focused ? 'fitness' : 'fitness-outline';
+              } else if (route.name === 'History') {
+                iconName = focused ? 'time' : 'time-outline';
+              } else if (route.name === 'Profile') {
+                iconName = focused ? 'person' : 'person-outline';
+              }
 
-            return <Icon name={iconName} size={size} color={color} />;
-          },
-          tabBarActiveTintColor: '#007AFF',
-          tabBarInactiveTintColor: '#8e8e93',
-        })}
-      >
-        <Tab.Screen name="Exercises" component={ExercisesScreen} />
-        <Tab.Screen name="Progress" component={ProgressScreen} />
-        <Tab.Screen name="Home" component={HomeStackScreen} />
-        <Tab.Screen name="History" component={HistoryScreen} />
-        <Tab.Screen name="Profile" component={ProfileScreen} />
-      </Tab.Navigator>
-    </NavigationContainer>
+              return <Icon name={iconName} size={size} color={color} />;
+            },
+            tabBarActiveTintColor: '#007AFF',
+            tabBarInactiveTintColor: '#8e8e93',
+          })}
+        >
+          <Tab.Screen name="Exercises" component={ExercisesScreen} />
+          <Tab.Screen name="Progress" component={ProgressScreen} />
+          <Tab.Screen name="Home" component={HomeStackScreen} />
+          <Tab.Screen name="History" component={HistoryScreen} />
+          <Tab.Screen name="Profile" component={ProfileScreen} />
+        </Tab.Navigator>
+      </NavigationContainer>
+    </WorkoutProvider>
   );
 }
 

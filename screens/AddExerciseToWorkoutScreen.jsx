@@ -128,7 +128,7 @@ const AddExerciseToWorkoutScreen = ({ route, navigation }) => {
         );
     
         console.log('All sets saved successfully');
-        navigation.navigate("StartWorkout");
+        navigation.navigate("Workout");
       } catch (error) {
         console.error('Error saving sets:', error);
       }

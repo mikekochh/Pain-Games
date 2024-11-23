@@ -1,10 +1,15 @@
-import React from 'react';
+import React, { useContext} from 'react';
 import { View, Text, TouchableOpacity, StyleSheet, ScrollView } from 'react-native';
 import Icon from 'react-native-vector-icons/Ionicons';
+import { WorkoutContext } from '../components/context/WorkoutProvider';
 
 const HomeScreen = ({ navigation }) => {
+
+  const { startWorkout } = useContext(WorkoutContext) || {};
+
   const handleStartWorkout = () => {
-    navigation.navigate('StartWorkout');
+    startWorkout(1);
+    navigation.navigate('Workout');
   };
 
   return (

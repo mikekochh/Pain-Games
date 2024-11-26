@@ -116,9 +116,6 @@ const WorkoutScreen = () => {
           return set;
         });
       
-        console.log('updatedWorkoutSets: ', updatedWorkoutSets);
-        console.log('newSets: ', newSets);
-      
         // Ensure each new set includes exerciseID and reset flags
         const newSetsWithExerciseID = newSets.map((set) => ({
           ...set,

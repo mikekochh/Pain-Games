@@ -35,17 +35,17 @@ const styles = StyleSheet.create({
     padding: 20,
     justifyContent: 'center',
     alignItems: 'center',
-    backgroundColor: '#f7f7f7',
+    backgroundColor: '#2B2B2B'
   },
   title: {
     fontSize: 28,
     fontWeight: 'bold',
-    color: '#333',
+    color: '#E63946',
     marginBottom: 5
   },
   subtitle: {
     fontSize: 16,
-    color: '#555',
+    color: '#E63946',
     marginBottom: 20,
   },
   buttonContainer: {
@@ -55,7 +55,6 @@ const styles = StyleSheet.create({
   button: {
     flexDirection: 'row',
     alignItems: 'center',
-    backgroundColor: '#fff',
     padding: 15,
     marginVertical: 10,
     borderRadius: 10,
@@ -66,11 +65,11 @@ const styles = StyleSheet.create({
     elevation: 3,
   },
   primaryButton: {
-    backgroundColor: '#007AFF',
+    backgroundColor: '#E63946',
     width: '100%',
   },
   primaryButtonText: {
-    color: '#fff',
+    color: 'white',
     fontSize: 18,
     fontWeight: 'bold',
     marginLeft: 10,

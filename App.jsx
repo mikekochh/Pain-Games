@@ -19,6 +19,7 @@ import {
 } from 'react-native-heroicons/outline';
 import HomeScreen from './screens/HomeScreen';
 import WorkoutScreen from './screens/WorkoutScreen';
+import WorkoutSummaryScreen from './screens/WorkoutSummaryScreen';
 import { WorkoutProvider } from './components/context/WorkoutProvider';
 
 // Placeholder Screens
@@ -54,6 +55,7 @@ function HomeStackScreen() {
     <HomeStack.Navigator screenOptions={{ headerShown: false }}>
       <HomeStack.Screen name="HomeMain" component={HomeScreen} />
       <HomeStack.Screen name="Workout" component={WorkoutScreen} />
+      <HomeStack.Screen name="Summary" component={WorkoutSummaryScreen} />
     </HomeStack.Navigator>
   );
 }

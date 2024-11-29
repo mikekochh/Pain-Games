@@ -7,22 +7,19 @@ import {
   TouchableOpacity,
 } from 'react-native';
 import AddExerciseModal from '../components/modals/AddExerciseModal';
+import EndWorkoutModal from '../components/modals/EndWorkoutModal';
 import axios from 'axios';
 import { API_BASE_URL } from '../components/constants';
 import { WorkoutContext } from '../components/context/WorkoutProvider';
 import Loading from '../components/LoadingComponent';
 
-const WorkoutScreen = () => {
+const WorkoutScreen = ({ navigation }) => {
   const [currentExercise, setCurrentExercise] = useState({}); // Active exercise
   const [modalVisible, setModalVisible] = useState(false); // Modal visibility
-  const { workoutID, workoutTime, workoutSets, setWorkoutSets } = useContext(WorkoutContext) || {};
+  const [endWorkoutModalVisibile, setEndWorkoutModalVisible] = useState(false);
+  const { workoutID, workoutTime, workoutSets, setWorkoutSets, setIsWorkoutPaused } = useContext(WorkoutContext) || {};
   const [exercises, setExercises] = useState(null);
   const [loading, setLoading] = useState(true);
-
-
-  useEffect(() => {
-    console.log("workoutSets: ", workoutSets);
-  }, [workoutSets]);
 
   useEffect(() => {
     if (exercises) {
@@ -50,6 +47,16 @@ const WorkoutScreen = () => {
     fetchExercises();
   }, [])
 
+  const handleResumeWorkout = () => {
+    setEndWorkoutModalVisible(false);
+    setIsWorkoutPaused(false);
+  }
+
+  const handleStopWorkout = () => {
+    setIsWorkoutPaused(true);
+    setEndWorkoutModalVisible(true);
+  }
+
   const formatTime = (seconds) => {
     const mins = Math.floor(seconds / 60);
     const secs = seconds % 60;
@@ -61,14 +68,16 @@ const WorkoutScreen = () => {
     setModalVisible(true); // Open the modal
   };
 
+  const finishWorkout = () => {
+    navigation.navigate('Summary', { workoutID: workoutID });
+    setEndWorkoutModalVisible(false);
+  }
+
   const handleSave = async (sets) => {
     try {
       const newSets = sets.filter((set) => set.new);
 
       const updatedSets = sets.filter((set) => set.updated && !set.new);
-
-      console.log("newSets: ", newSets);
-      console.log("updatedSets: ", updatedSets);
 
       if (newSets.length > 0) {
         const responseInsert = await axios.post(API_BASE_URL + '/api/workout/addSets', {
@@ -142,6 +151,10 @@ const WorkoutScreen = () => {
 
   return (
     <View style={styles.container}>
+      <TouchableOpacity style={styles.stopButton} onPress={handleStopWorkout}>
+        <View style={styles.stopIcon} />
+      </TouchableOpacity>
+
       {/* Timer at the Top */}
       <View style={styles.timerContainer}>
         <Text style={styles.timerLabel}>Workout Time</Text>
@@ -191,6 +204,11 @@ const WorkoutScreen = () => {
         exercise={currentExercise}
         onSave={handleSave}
       />
+      <EndWorkoutModal 
+        visible={endWorkoutModalVisibile}
+        onClose={handleResumeWorkout}
+        onDone={finishWorkout}
+      />
     </View>
   );
 };
@@ -199,7 +217,7 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     padding: 20,
-    backgroundColor: '#f7f7f7',
+    backgroundColor: '#2B2B2B',
   },
   timerContainer: {
     alignItems: 'center',
@@ -212,7 +230,7 @@ const styles = StyleSheet.create({
   timer: {
     fontSize: 32,
     fontWeight: 'bold',
-    color: '#333',
+    color: '#E63946',
   },
   currentExerciseContainer: {
     alignItems: 'center',
@@ -230,14 +248,14 @@ const styles = StyleSheet.create({
   exercisesTitle: {
     fontSize: 18,
     fontWeight: 'bold',
-    color: '#333',
+    color: '#E63946',
     marginBottom: 10,
   },
   exerciseList: {
     paddingBottom: 20,
   },
   exerciseButton: {
-    backgroundColor: '#fff',
+    backgroundColor: '#C76605',
     padding: 15,
     borderRadius: 10,
     marginVertical: 8,
@@ -248,19 +266,36 @@ const styles = StyleSheet.create({
     elevation: 3,
   },
   exerciseButtonHighlighted: {
-    backgroundColor: '#e6f7ff', // Light blue highlight
-    borderColor: '#007AFF', // Blue border for emphasis
+    backgroundColor: '#D97706',
+    borderColor: 'black', // Blue border for emphasis
     borderWidth: 2,
   },
   exerciseText: {
     fontSize: 16,
     fontWeight: '600',
-    color: '#333',
+    color: '#000',
   },
   exerciseTextHighlighted: {
     fontSize: 16,
     fontWeight: 'bold',
-    color: '#007AFF', // Matches the highlighted border color
+    color: '#black', // Matches the highlighted border color
+  },
+  stopButton: {
+    position: 'absolute',
+    top: 20,
+    right: 20,
+    width: 50,
+    height: 50,
+    borderRadius: 25,
+    backgroundColor: '#FF0000',
+    justifyContent: 'center',
+    alignItems: 'center',
+    zIndex: 10,
+  },
+  stopIcon: {
+    width: 15,
+    height: 15,
+    backgroundColor: '#FFFFFF',
   },
 });
 

@@ -99,6 +99,7 @@ const AddExerciseModal = ({ visible, onClose, exercise, onSave }) => {
                 <TextInput
                   style={[styles.input, styles.repsInput]}
                   placeholder="Reps"
+                  placeholderTextColor="#999"
                   keyboardType="numeric"
                   value={item.reps}
                   onChangeText={(value) => handleInputChange(item.id, 'reps', value)}
@@ -106,6 +107,7 @@ const AddExerciseModal = ({ visible, onClose, exercise, onSave }) => {
                 <TextInput
                   style={[styles.input, styles.weightInput]}
                   placeholder="Weight (lbs)"
+                  placeholderTextColor="#999"
                   keyboardType="numeric"
                   value={item.weight}
                   onChangeText={(value) => handleInputChange(item.id, 'weight', value)}
@@ -138,11 +140,13 @@ const styles = StyleSheet.create({
   },
   number: {
     paddingRight: 10,
+    color: '#E63946',
+    fontWeight: 'bold'
   },
   modalContainer: {
     flex: 1,
     marginTop: 60,
-    backgroundColor: '#fff',
+    backgroundColor: '#2B2B2B',
     borderTopLeftRadius: 30,
     borderTopRightRadius: 30,
     padding: 20,
@@ -152,6 +156,7 @@ const styles = StyleSheet.create({
     fontSize: 20,
     fontWeight: 'bold',
     marginBottom: 20,
+    color: '#E63946'
   },
   setRow: {
     flexDirection: 'row',
@@ -162,7 +167,7 @@ const styles = StyleSheet.create({
     fontSize: 24,
     fontWeight: 'bold',
     marginRight: 10,
-    color: '#333',
+    color: '#E63946',
   },
   input: {
     borderWidth: 1,
@@ -171,6 +176,7 @@ const styles = StyleSheet.create({
     padding: 10,
     marginHorizontal: 5,
     textAlign: 'center',
+    color: 'white', // White text color when typing
   },
   repsInput: {
     flex: 1,
@@ -182,7 +188,7 @@ const styles = StyleSheet.create({
     marginVertical: 10, // Adjusted for proper spacing above and below
     alignSelf: 'center',
     padding: 10,
-    backgroundColor: '#007AFF',
+    backgroundColor: '#C5303C',
     borderRadius: 5,
   },  
   addButtonText: {
@@ -199,7 +205,7 @@ const styles = StyleSheet.create({
     flex: 1,
     marginRight: 10,
     padding: 15,
-    backgroundColor: '#007AFF',
+    backgroundColor: '#C5303C',
     borderRadius: 5,
   },
   saveButtonText: {
@@ -224,9 +230,8 @@ const styles = StyleSheet.create({
     top: 10,
     right: 10,
     zIndex: 10,
-    backgroundColor: '#fff',
-    width: 30,
-    height: 30,
+    width: 35,
+    height: 35,
     borderRadius: 15,
     justifyContent: 'center',
     alignItems: 'center',
@@ -235,7 +240,7 @@ const styles = StyleSheet.create({
   closeButtonText: {
     fontSize: 18,
     fontWeight: 'bold',
-    color: '#333',
+    color: '#fff',
   },
 });
 

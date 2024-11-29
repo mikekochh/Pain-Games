@@ -8,12 +8,12 @@ export const WorkoutContext = createContext(null);
 export const WorkoutProvider = ({ children }) => {
     const [workoutID, setWorkoutID] = useState(null);
     const [workoutTime, setWorkoutTime] = useState(0);
+    const [isWorkoutPaused, setIsWorkoutPaused] = useState(false);
+    const [pausedWorkoutTime, setPausedWorkoutTime] = useState(0);
     const [workoutSets, setWorkoutSets] = useState([]);
 
     useEffect(() => {
         if (workoutID) {
-            console.log("Starting workout timer for workoutID: ", workoutID);
-    
             // Reset workout time to 0 whenever workoutID changes
             setWorkoutTime(0);
     
@@ -25,6 +25,15 @@ export const WorkoutProvider = ({ children }) => {
             return () => clearInterval(workoutTimer);
         }
     }, [workoutID]);
+
+    useEffect(() => {
+        if (isWorkoutPaused) {
+            setPausedWorkoutTime(workoutTime);
+        }
+        else {
+            setWorkoutTime(pausedWorkoutTime);
+        }
+    }, [isWorkoutPaused])
 
     const startWorkout = async (userID) => {
         try {
@@ -58,9 +67,16 @@ export const WorkoutProvider = ({ children }) => {
     };
     
 
-    const endWorkout = async () => {
+    const endWorkout = async (totalVolume) => {
+        const response = await axios.post(`${API_BASE_URL}/api/workout/endWorkout`, {
+            workoutID,
+            totalVolume,
+            workoutDuration: pausedWorkoutTime
+        });
+        
         setWorkoutID(null);
         setWorkoutTime(0);
+        setPausedWorkoutTime(0);
     }
 
     return (
@@ -68,9 +84,12 @@ export const WorkoutProvider = ({ children }) => {
             workoutID,
             workoutTime,
             workoutSets,
+            pausedWorkoutTime,
             startWorkout,
             addSetsToWorkout,
-            setWorkoutSets
+            setWorkoutSets,
+            endWorkout,
+            setIsWorkoutPaused
         }}>
             {children}
         </WorkoutContext.Provider>

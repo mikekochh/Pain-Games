@@ -2,13 +2,16 @@ import React, { useContext} from 'react';
 import { View, Text, TouchableOpacity, StyleSheet, ScrollView } from 'react-native';
 import Icon from 'react-native-vector-icons/Ionicons';
 import { WorkoutContext } from '../components/context/WorkoutProvider';
+import { AuthContext } from '../components/context/AuthProvider';
 
 const HomeScreen = ({ navigation }) => {
 
   const { startWorkout } = useContext(WorkoutContext) || {};
+  const { user } = useContext(AuthContext) || {};
 
   const handleStartWorkout = () => {
-    startWorkout(1);
+    console.log("user: ", user);
+    startWorkout(user.id);
     navigation.navigate('Workout');
   };
 

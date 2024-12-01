@@ -1,8 +1,9 @@
 // AuthContext.tsx
 import React, { createContext, useState } from 'react';
 import { Alert } from 'react-native';
-import { API_BASE_URL, API_USERS_ENDPOINT, API_WORKOUTS_ENDPOINT } from '../constants';
+import { API_BASE_URL } from '../constants';
 import AsyncStorage from '@react-native-async-storage/async-storage';
+import axios from 'axios';
 
 export const AuthContext = createContext(null);
 
@@ -10,6 +11,28 @@ export const AuthProvider = ({ children }) => {
   const [user, setUser] = useState(null);
   const [loading, setLoading] = useState(false);
   const [workout, setWorkout] = useState(null);
+
+  const checkLoginStatus = async () => {
+    console.log("checkLoginStatus running...");
+    try {
+      const username = await AsyncStorage.getItem('username') || '';
+      const id = await AsyncStorage.getItem('id') || '';
+
+      if (username) {
+        await handleLoginShort(username, id);
+      }
+      
+    } catch (error) {
+      console.log('Error retreiving login details: ', error);
+    }
+  }
+
+  const handleLoginShort = async (username, id) => {
+    setUser({
+      username,
+      id
+    });
+  }
 
   const startWorkout = async (navigation) => {
     console.log("starting new workout...");
@@ -122,27 +145,9 @@ export const AuthProvider = ({ children }) => {
     setLoading(false);
   };
 
-  const handleCreateAccount = async (username, password, email, navigation) => {
-
+  const handleCreateAccount = async (username, password, email) => {
+    console.log("handleCreateAccount running...");
     setLoading(true);
-
-    const checkUsername = await fetch(API_BASE_URL + API_USERS_ENDPOINT + "/username/" + username)
-    const jsonUsername = await checkUsername.json();
-
-    if (jsonUsername.username) {
-      Alert.alert('An account with this username already exists');
-      setLoading(false);
-      return;
-    }
-
-    const checkEmail = await fetch(API_BASE_URL + API_USERS_ENDPOINT + "/email/" + email)
-    const jsonEmail = await checkEmail.json();
-
-    if (jsonEmail.email) {
-      Alert.alert('An account with this email address already exists');
-      setLoading(false);
-      return;
-    }
 
     if (username.trim() === '') {
       Alert.alert('Please enter a valid username');
@@ -160,23 +165,21 @@ export const AuthProvider = ({ children }) => {
       return;
     }
 
-    const response = await fetch(API_BASE_URL + API_USERS_ENDPOINT, {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify({
-          username: username,
-          email: email,
-          password: password,
-      }),
+    const response = await axios.post(API_BASE_URL + "/api/user/createAccount", {
+      username: username,
+      email: email,
+      password: password,
     });
 
-    if (response.ok) {
-      handleLogin(username, password, navigation);
+    if (response.status === 200 && response.data.success) {
+      console.log("response: ", response);
+      console.log("response.data: ", response.data);
+      const userId = response.data.userId;
+
+      handleLoginShort(username, userId);
     } else {
-      const errorData = await response.json();
-      Alert.alert('Account creation failed', errorData.message);
+      console.error("Account creation failed: ", response.data.error || "Unknown error");
+      Alert.alert("Account creation failed");
     }
 
     setLoading(false);
@@ -205,7 +208,8 @@ export const AuthProvider = ({ children }) => {
       handleLogout,
       workout,
       startWorkout,
-      setWorkout
+      setWorkout,
+      checkLoginStatus
     }}>
       {children}
     </AuthContext.Provider>

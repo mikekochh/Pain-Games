@@ -100,15 +100,9 @@ export const AuthProvider = ({ children }) => {
     }
 
     try {
-      const response = await fetch(API_BASE_URL + API_USERS_ENDPOINT + "/login", {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({
-          username: username,
-          password: password,
-        }),
+      const response = await axios.post(API_BASE_URL + "/api/user/login", {
+        username: username,
+        password: password,
       });
 
       if (response.ok) {
@@ -120,19 +114,6 @@ export const AuthProvider = ({ children }) => {
         });
 
         await storeLoginDetails(username, password);
-
-        const responseWorkout = await fetch(API_BASE_URL + API_WORKOUTS_ENDPOINT + "/inProgress/" + data.user.id);
-
-        const workoutData = await responseWorkout.json();
-        if (workoutData._id) {
-          setWorkout({
-            workoutID: workoutData._id,
-            userID: workoutData.userID,
-            inProgress: workoutData.inProgress
-          });
-        }
-
-        navigation.replace('Home');
       } else {
         const errorData = await response.json();
         Alert.alert('Login failed', errorData.message);

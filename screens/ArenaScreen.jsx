@@ -6,7 +6,6 @@ import { API_BASE_URL } from '../components/constants';
 
 const ArenaScreen = () => {
   const [searchQuery, setSearchQuery] = useState('');
-  const [results, setResults] = useState([]);
   const [loading, setLoading] = useState(false);
   const [friends, setFriends] = useState([]);
 

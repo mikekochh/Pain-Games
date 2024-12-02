@@ -25,6 +25,7 @@ const LoginScreen = ({ navigation }) => {
       <TextInput
         style={styles.input}
         placeholder="Username"
+        placeholderTextColor="#dddddd"
         autoCapitalize="none"
         value={username}
         onChangeText={setUsername}
@@ -32,6 +33,7 @@ const LoginScreen = ({ navigation }) => {
       <TextInput
         style={styles.input}
         placeholder="Password"
+        placeholderTextColor="#dddddd"
         secureTextEntry
         value={password}
         onChangeText={setPassword}

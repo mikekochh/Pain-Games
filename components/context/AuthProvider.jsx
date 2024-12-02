@@ -105,18 +105,20 @@ export const AuthProvider = ({ children }) => {
         password: password,
       });
 
-      if (response.ok) {
-        const data = await response.json();
+      console.log("response from logging in: ", response.data.success);
+
+      if (response.data.success) {
+        console.log("are we getting here?");
         setUser({
-          id: data.user.id,
-          username: data.user.username,
-          email: data.user.email,
+          id: response.data.user.id,
+          username: username,
+          email: response.data.user.email,
         });
 
         await storeLoginDetails(username, password);
       } else {
-        const errorData = await response.json();
-        Alert.alert('Login failed', errorData.message);
+        // const errorData = await response.json();
+        Alert.alert('Login failed');
       }
     } catch (error) {
       console.error('Error:', error);

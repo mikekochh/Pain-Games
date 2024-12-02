@@ -21,6 +21,7 @@ export default StyleSheet.create({
         fontSize: 24,
         fontWeight: 'bold',
         marginBottom: 24,
+        marginTop: 100,
         color: '#E63946',
     },
     exerciseTitle: {
@@ -108,5 +109,22 @@ export default StyleSheet.create({
         color: '#fff',             // White text for contrast
         fontWeight: 'bold',        // Bold text for intensity
         fontSize: 16,              // Text size for visibility
-      }
+      },
+      resultItem: {
+        flexDirection: 'row',
+        justifyContent: 'space-between',
+        alignItems: 'center',
+        padding: 10,
+        backgroundColor: '#fff',
+        borderRadius: 8,
+        marginBottom: 10,
+        shadowColor: '#000',
+        shadowOffset: { width: 0, height: 2 },
+        shadowOpacity: 0.2,
+        shadowRadius: 4,
+        elevation: 2,
+      },
+      resultText: {
+        fontSize: 16,
+      },
 });

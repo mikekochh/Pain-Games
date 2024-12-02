@@ -20,6 +20,7 @@ import {
 import HomeScreen from './screens/HomeScreen';
 import WorkoutScreen from './screens/WorkoutScreen';
 import WorkoutSummaryScreen from './screens/WorkoutSummaryScreen';
+import ArenaScreen from './screens/ArenaScreen';
 import LoginScreen from './screens/LoginScreen';
 import CreateAccountScreen from './screens/CreateAccountScreen';
 import ProfileScreen from './screens/ProfileScreen';
@@ -40,13 +41,6 @@ function RootNavigator() {
     </NavigationContainer>
   )
 }
-
-// Placeholder Screens
-const FriendsScreen = () => (
-  <View style={styles.screen}>
-    <Text style={styles.text}>Friends Screen</Text>
-  </View>
-);
 
 const ColosseumScreen = () => (
   <View style={styles.screen}>
@@ -108,7 +102,7 @@ function AppTabs() {
         tabBarIcon: ({ focused, color }) => {
           if (route.name === 'Home') {
             return focused ? <HomeIcon color={color} size={24} /> : <HomeOutline color={color} size={24} />;
-          } else if (route.name === 'Friends') {
+          } else if (route.name === 'Arenas') {
             return focused ? <UsersIcon color={color} size={24} /> : <UsersOutline color={color} size={24} />;
           } else if (route.name === 'Personal') {
             return focused ? <FireIcon color={color} size={24} /> : <FireOutline color={color} size={24} />;
@@ -123,7 +117,7 @@ function AppTabs() {
       })}
     >
       <Tab.Screen name="Personal" component={PersonalStackScreen} />
-      <Tab.Screen name="Friends" component={FriendsScreen} />
+      <Tab.Screen name="Arenas" component={ArenaScreen} />
       <Tab.Screen name="Home" component={HomeStackScreen} />
       <Tab.Screen name="Colosseum" component={ColosseumScreen} />
       <Tab.Screen name="Profile" component={ProfileScreen} />

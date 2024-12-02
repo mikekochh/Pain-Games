@@ -15,6 +15,7 @@ const PersonalScreen = ({ navigation }) => {
     useCallback(() => {
       const fetchPastWorkouts = async () => {
         try {
+          console.log("user: ", user);
           const response = await axios.get(`${API_BASE_URL}/api/user/fetchPastWorkouts/${user.id}`);
           console.log("response: ", response.data);
           setUserWorkouts(response.data.data); // Store all workouts

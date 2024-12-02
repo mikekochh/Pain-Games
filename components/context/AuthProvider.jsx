@@ -75,9 +75,10 @@ export const AuthProvider = ({ children }) => {
     }
   }
 
-  const storeLoginDetails = async (username, password) => {
+  const storeLoginDetails = async (username, id, password) => {
     try {
       await AsyncStorage.setItem('username', username);
+      await AsyncStorage.setItem('id', JSON.stringify(id));
       await AsyncStorage.setItem('password', password);
     } catch (error) {
       console.log('Error storing login details: ', error);
@@ -115,7 +116,9 @@ export const AuthProvider = ({ children }) => {
           email: response.data.user.email,
         });
 
-        await storeLoginDetails(username, password);
+        console.log("response.data.user.id: ", response.data.user.id)
+
+        await storeLoginDetails(username, response.data.user.id, password);
       } else {
         // const errorData = await response.json();
         Alert.alert('Login failed');

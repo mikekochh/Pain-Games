@@ -10,7 +10,7 @@ const ArenaScreen = () => {
   const [loading, setLoading] = useState(false);
   const [friends, setFriends] = useState([]);
 
-  const [allUsers, setAllUsers] = useState();
+  const [allUsers, setAllUsers] = useState([]);
 
 
   useEffect(() => {
@@ -30,7 +30,7 @@ const ArenaScreen = () => {
   }, [])
 
   useEffect(() => {
-    console.log("allUsers: ", allUsers);
+    console.log("allUsers: ", allUsers[0]);
   }, [allUsers])
 
   // Handle adding a friend
@@ -51,18 +51,17 @@ const ArenaScreen = () => {
         onChangeText={setSearchQuery}
       />
 
-      
-
       {/* Search Results */}
       {loading ? (
         <Text style={styles.loadingText}>Searching...</Text>
       ) : (
         <FlatList
             data={allUsers}
-            keyExtractor={(item) => item.id || item.username}
             renderItem={({ item }) => (
                 <View style={styles.resultItem}>
-                    <Text style={styles.resultText}>{item.username || 'Unnamed User'}</Text>
+                    <Text style={styles.resultText}>
+                        {item.username || 'Unnamed User'}
+                    </Text>
                     <TouchableOpacity
                         style={styles.addButton}
                         onPress={() => addFriend(item)}
@@ -72,15 +71,16 @@ const ArenaScreen = () => {
                 </View>
             )}
             ListEmptyComponent={
-                !loading && (
+                !loading ? (
                     <Text>No users found. Try searching!</Text>
-                )
+                ) : null
             }
         />
+
       )}
 
       {/* Friend List */}
-      <View style={styles.friendListContainer}>
+      {/* <View style={styles.friendListContainer}>
         <Text style={styles.subTitle}>Your Friends:</Text>
         <FlatList
           data={friends}
@@ -89,7 +89,7 @@ const ArenaScreen = () => {
             <Text style={styles.friendText}>{item.name}</Text>
           )}
         />
-      </View>
+      </View> */}
     </View>
   );
 };

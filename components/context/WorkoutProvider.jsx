@@ -67,16 +67,21 @@ export const WorkoutProvider = ({ children }) => {
     };
     
 
-    const endWorkout = async (totalVolume) => {
-        const response = await axios.post(`${API_BASE_URL}/api/workout/endWorkout`, {
-            workoutID,
-            totalVolume,
-            workoutDuration: pausedWorkoutTime
-        });
+    const endWorkout = async (totalVolume, userID) => {
+        // const response = await axios.post(`${API_BASE_URL}/api/workout/endWorkout`, {
+        //     workoutID,
+        //     totalVolume,
+        //     workoutDuration: pausedWorkoutTime
+        // });
+
+        const checkHighestLiftsResponse = await axios.post(`${API_BASE_URL}/api/user/checkHighestLifts`, {
+            userID,
+            workoutSets
+        })
         
-        setWorkoutID(null);
-        setWorkoutTime(0);
-        setPausedWorkoutTime(0);
+        // setWorkoutID(null);
+        // setWorkoutTime(0);
+        // setPausedWorkoutTime(0);
     }
 
     return (

@@ -12,17 +12,15 @@ export const isAndroid = () => {
 export default StyleSheet.create({
     container: {
         flex: 1,
-        justifyContent: 'center',
-        alignItems: 'center',
-        padding: 16,
         backgroundColor: '#2B2B2B',
     },
     title: {
-        fontSize: 24,
-        fontWeight: 'bold',
-        marginBottom: 24,
-        marginTop: 100,
-        color: '#E63946',
+      fontSize: 24,
+      fontWeight: 'bold',
+      marginBottom: 24,
+      marginTop: 30,
+      color: '#E63946',
+      textAlign: 'center'
     },
     exerciseTitle: {
         textAlign: 'center',
@@ -127,4 +125,36 @@ export default StyleSheet.create({
       resultText: {
         fontSize: 16,
       },
+      workoutList: {
+        paddingBottom: 16,
+      },
+      workoutCard: {
+        backgroundColor: '#4D4D4D',
+        padding: 16,
+        marginVertical: 8,
+        marginHorizontal: 6,
+        borderRadius: 8,
+        elevation: 2, // Shadow for Android
+        shadowColor: '#000', // Shadow for iOS
+        shadowOpacity: 0.1,
+        shadowOffset: { width: 0, height: 2 },
+        shadowRadius: 4,
+      },
+      workoutText: {
+        fontSize: 16,
+        marginBottom: 4,
+        color: 'white'
+      },
+      comingSoon: {
+        marginTop: 20,
+        fontSize: 24,
+        fontWeight: 'bold',
+        color: '#FF4C4C',
+        textTransform: 'uppercase',
+        letterSpacing: 2,
+        textShadowColor: 'rgba(0, 0, 0, 0.75)',
+        textShadowOffset: { width: 1, height: 1 },
+        textShadowRadius: 3,
+        textAlign: 'center'
+    },
 });

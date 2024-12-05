@@ -5,6 +5,7 @@ import { API_BASE_URL } from '../components/constants';
 import Loading from '../components/LoadingComponent';
 import { AuthContext } from '../components/context/AuthProvider';
 import { useFocusEffect } from '@react-navigation/native';
+import styles from '../components/styles';
 
 const PersonalScreen = ({ navigation }) => {
   const { user } = useContext(AuthContext) || {};
@@ -37,7 +38,6 @@ const PersonalScreen = ({ navigation }) => {
       style={styles.workoutCard}
       onPress={() => navigation.navigate('Summary', { workoutID: item.id })} // Navigate with workoutID
     >
-      <Text style={styles.workoutText}>Workout ID: {item.id}</Text>
       <Text style={styles.workoutText}>Date: {new Date(item.created_at).toLocaleString()}</Text>
       <Text style={styles.workoutText}>Workout Length: {item.workout_length} minutes</Text>
       <Text style={styles.workoutText}>Total Volume: {item.total_volume}</Text>
@@ -57,37 +57,5 @@ const PersonalScreen = ({ navigation }) => {
     </View>
   );
 };
-
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    backgroundColor: '#fff',
-    padding: 16,
-  },
-  title: {
-    fontSize: 24,
-    fontWeight: 'bold',
-    marginBottom: 16,
-    textAlign: 'center',
-  },
-  workoutList: {
-    paddingBottom: 16,
-  },
-  workoutCard: {
-    backgroundColor: '#f9f9f9',
-    padding: 16,
-    marginVertical: 8,
-    borderRadius: 8,
-    elevation: 2, // Shadow for Android
-    shadowColor: '#000', // Shadow for iOS
-    shadowOpacity: 0.1,
-    shadowOffset: { width: 0, height: 2 },
-    shadowRadius: 4,
-  },
-  workoutText: {
-    fontSize: 16,
-    marginBottom: 4,
-  },
-});
 
 export default PersonalScreen;

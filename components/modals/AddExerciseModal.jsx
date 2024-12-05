@@ -9,18 +9,37 @@ import {
   FlatList,
 } from 'react-native';
 import { WorkoutContext } from '../context/WorkoutProvider';
+import { API_BASE_URL } from '../constants';
+import { AuthContext } from '../context/AuthProvider';
+import axios from 'axios';
 
 const AddExerciseModal = ({ visible, onClose, exercise, onSave }) => {
-
   const { workoutSets } = useContext(WorkoutContext) || {};
+  const { user } = useContext(AuthContext) || {};
+  const [maxWeight, setMaxWeight] = useState(null);
+  const [currentTotalWeight, setCurrentTotalWeight] = useState(0);
 
   const [sets, setSets] = useState([
-    { id: 1, reps: 0, weight: 0, new: true },
-    { id: 2, reps: 0, weight: 0, new: true },
-    { id: 3, reps: 0, weight: 0, new: true },
+    { id: 1, reps: '', weight: '', new: true },
+    { id: 2, reps: '', weight: '', new: true },
+    { id: 3, reps: '', weight: '', new: true },
   ]);
 
   useEffect(() => {
+    const fetchExerciseMax = async () => {
+      const userID = user.id;
+      const exerciseID = exercise.id;
+
+      const response = await axios.get(`${API_BASE_URL}/api/user/fetchExerciseMax`, {
+        params: {
+          userID,
+          exerciseID
+        }
+      });
+
+      setMaxWeight(response.data.data.weight_max);
+    };
+
     const populateExistingSets = () => {
       const existingSets = workoutSets.filter((set) => set.exerciseID === exercise.id);
 
@@ -38,22 +57,28 @@ const AddExerciseModal = ({ visible, onClose, exercise, onSave }) => {
           { id: 3, reps: 0, weight: 0, new: true },
         ]);
       }
-    }
+    };
 
     if (workoutSets.length > 0 && exercise) {
       populateExistingSets();
     }
-  }, [workoutSets, exercise])
+    fetchExerciseMax();
+  }, [workoutSets, exercise]);
+
+  const calculateCurrentTotalVolume = (updatedSets) => {
+    const totalVolume = updatedSets.reduce((total, set) => {
+      return total + (parseInt(set.reps) || 0) * (parseInt(set.weight) || 0);
+    }, 0);
+    setCurrentTotalWeight(totalVolume);
+  };
 
   const handleInputChange = (id, field, value) => {
-    setSets((prevSets) =>
-      prevSets.map((set) =>
-        set.id === id 
-          ? { ...set, [field]: value, updated: true } 
-          : set
-      )
+    const updatedSets = sets.map((set) =>
+      set.id === id ? { ...set, [field]: value, updated: true } : set
     );
-  };  
+    setSets(updatedSets);
+    calculateCurrentTotalVolume(updatedSets);
+  };
 
   const addSet = () => {
     setSets((prevSets) => [
@@ -81,15 +106,13 @@ const AddExerciseModal = ({ visible, onClose, exercise, onSave }) => {
     >
       <View style={styles.modalOverlay}>
         <View style={styles.modalContainer}>
-          {/* Close Button */}
           <TouchableOpacity style={styles.closeButton} onPress={onClose}>
             <Text style={styles.closeButtonText}>X</Text>
           </TouchableOpacity>
 
-          {/* Modal Title */}
           <Text style={styles.modalTitle}>{exercise?.exercise_name}</Text>
+          <Text style={styles.maxWeightText}>Max Weight: {maxWeight}lbs</Text>
 
-          {/* List of Sets */}
           <FlatList
             data={sets}
             keyExtractor={(item) => item.id.toString()}
@@ -101,7 +124,7 @@ const AddExerciseModal = ({ visible, onClose, exercise, onSave }) => {
                   placeholder="Reps"
                   placeholderTextColor="#999"
                   keyboardType="numeric"
-                  value={item.reps}
+                  value={String(item.reps)}
                   onChangeText={(value) => handleInputChange(item.id, 'reps', value)}
                 />
                 <TextInput
@@ -109,7 +132,7 @@ const AddExerciseModal = ({ visible, onClose, exercise, onSave }) => {
                   placeholder="Weight (lbs)"
                   placeholderTextColor="#999"
                   keyboardType="numeric"
-                  value={item.weight}
+                  value={String(item.weight)}
                   onChangeText={(value) => handleInputChange(item.id, 'weight', value)}
                 />
               </View>
@@ -120,8 +143,8 @@ const AddExerciseModal = ({ visible, onClose, exercise, onSave }) => {
               </TouchableOpacity>
             }
           />
+          <Text style={styles.maxWeightText}>Total Weight Moved: {currentTotalWeight}lbs</Text>
 
-          {/* Save Button */}
           <View style={styles.modalButtons}>
             <TouchableOpacity style={styles.saveButton} onPress={handleSave}>
               <Text style={styles.saveButtonText}>Save</Text>
@@ -132,6 +155,7 @@ const AddExerciseModal = ({ visible, onClose, exercise, onSave }) => {
     </Modal>
   );
 };
+
 
 const styles = StyleSheet.create({
   modalOverlay: {
@@ -155,8 +179,15 @@ const styles = StyleSheet.create({
   modalTitle: {
     fontSize: 20,
     fontWeight: 'bold',
-    marginBottom: 20,
+    marginBottom: 10,
     color: '#E63946'
+  },
+  maxWeightText: {
+    fontSize: 20,
+    fontWeight: 'semibold',
+    textAlign: 'center',
+    color: '#E63946',
+    marginBottom: 10
   },
   setRow: {
     flexDirection: 'row',

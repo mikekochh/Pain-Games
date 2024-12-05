@@ -25,6 +25,7 @@ import LoginScreen from './screens/LoginScreen';
 import CreateAccountScreen from './screens/CreateAccountScreen';
 import ProfileScreen from './screens/ProfileScreen';
 import PersonalScreen from './screens/PersonalScreen';
+import ColosseumScreen from './screens/ColosseumScreen';
 import { WorkoutProvider } from './components/context/WorkoutProvider';
 import { AuthContext, AuthProvider } from './components/context/AuthProvider';
 
@@ -41,12 +42,6 @@ function RootNavigator() {
     </NavigationContainer>
   )
 }
-
-const ColosseumScreen = () => (
-  <View style={styles.screen}>
-    <Text style={styles.text}>Colloseum Screen</Text>
-  </View>
-);
 
 // Stack Navigator for the Home Tab
 const HomeStack = createStackNavigator();

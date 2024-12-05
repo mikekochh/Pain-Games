@@ -41,16 +41,17 @@ const ArenaScreen = () => {
   return (
     <View style={styles.container}>
       <Text style={styles.title}>Arena</Text>
+      <Text style={styles.comingSoon}>Coming Soon</Text>
 
-      {/* Search Input */}
-      <TextInput
+
+      {/* <TextInput
         style={styles.searchInput}
         placeholder="Search for friends..."
         value={searchQuery}
         onChangeText={setSearchQuery}
       />
 
-      {/* Search Results */}
+
       {loading ? (
         <Text style={styles.loadingText}>Searching...</Text>
       ) : (
@@ -76,7 +77,7 @@ const ArenaScreen = () => {
             }
         />
 
-      )}
+      )} */}
 
       {/* Friend List */}
       {/* <View style={styles.friendListContainer}>

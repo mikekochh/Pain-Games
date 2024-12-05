@@ -7,10 +7,12 @@ import {
     Modal,
 } from 'react-native';
 import { WorkoutContext } from '../context/WorkoutProvider';
+import { AuthContext } from '../context/AuthProvider';
 
 const EndWorkoutModal = ({ visible, onClose, onDone }) => {
 
     const { endWorkout, pausedWorkoutTime, setIsWorkoutPaused, workoutSets } = useContext(WorkoutContext) || {};
+    const { user } = useContext(AuthContext) || {};
 
     const formatTime = (seconds) => {
       const mins = Math.floor(seconds / 60);
@@ -24,8 +26,8 @@ const EndWorkoutModal = ({ visible, onClose, onDone }) => {
     }
 
     const handleFinishWorkout = () => {
-      onDone();
-      endWorkout(totalVolume);
+      // onDone();
+      endWorkout(totalVolume, user.id);
     }
 
     const calculateTotalVolume = () => {

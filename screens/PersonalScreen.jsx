@@ -1,4 +1,4 @@
-import React, { useState, useContext, useCallback } from 'react';
+import React, { useState, useContext, useCallback, useEffect } from 'react';
 import { View, Text, StyleSheet, FlatList, TouchableOpacity } from 'react-native';
 import axios from 'axios';
 import { API_BASE_URL } from '../components/constants';
@@ -6,20 +6,43 @@ import Loading from '../components/LoadingComponent';
 import { AuthContext } from '../components/context/AuthProvider';
 import { useFocusEffect } from '@react-navigation/native';
 import styles from '../components/styles';
+import moment from 'moment';
 
 const PersonalScreen = ({ navigation }) => {
   const { user } = useContext(AuthContext) || {};
 
   const [userWorkouts, setUserWorkouts] = useState(null);
+  const [totalWorkouts, setTotalWorkouts] = useState(null);
+  const [totalWeightMoved, setTotalWeightMoved] = useState(null);
+  const [selectedDate, setSelectedDate] = useState(''); // Default to today's date
+
+  useEffect(() => {
+    const today = moment().format('YYYY-MM-DD');
+    console.log("today: ", today);
+    setSelectedDate(today);
+  }, [])
 
   useFocusEffect(
     useCallback(() => {
       const fetchPastWorkouts = async () => {
         try {
-          console.log("user: ", user);
           const response = await axios.get(`${API_BASE_URL}/api/user/fetchPastWorkouts/${user.id}`);
-          console.log("response: ", response.data);
           setUserWorkouts(response.data.data); // Store all workouts
+
+          const workouts = response.data.data;
+          
+          // Calculate total workouts
+          setTotalWorkouts(workouts.length);
+          
+          // Calculate total weight moved
+          const totalVolume = workouts.reduce((acc, workout) => acc + workout.total_volume, 0);
+          
+          // Format total volume
+          const formattedTotalVolume = totalVolume > 1000 
+            ? `${(totalVolume / 1000).toFixed(1)}k` 
+            : totalVolume;
+          
+          setTotalWeightMoved(formattedTotalVolume);
         } catch (error) {
           console.error("Error fetching workouts:", error);
         }
@@ -32,6 +55,35 @@ const PersonalScreen = ({ navigation }) => {
   if (!userWorkouts) {
     return <Loading loadingText="Loading Workouts" />;
   }
+
+  // Generate dates for the calendar
+  const generateDates = () => {
+    const days = [];
+    for (let i = -30; i <= 30; i++) {
+      days.push(moment().add(i, 'days').format('YYYY-MM-DD'));
+    }
+    return days;
+  };
+
+  const dates = generateDates();
+
+  const handleDatePress = (date) => {
+    setSelectedDate(date);
+    console.log('Selected Date:', date); // Replace this with navigation or other actions
+  };
+
+  const renderDate = ({ item }) => (
+    <TouchableOpacity onPress={() => handleDatePress(item)}>
+      <View style={[styles.dateItem, item === selectedDate && styles.selectedDateItem]}>
+        <Text style={[styles.dateText, item === selectedDate && styles.selectedDateText]}>
+          {moment(item).format('D')}
+        </Text>
+        <Text style={[styles.dateLabel, item === selectedDate && styles.selectedDateLabel]}>
+          {moment(item).format('ddd')}
+        </Text>
+      </View>
+    </TouchableOpacity>
+  );
 
   const renderWorkout = ({ item }) => (
     <TouchableOpacity
@@ -47,7 +99,32 @@ const PersonalScreen = ({ navigation }) => {
 
   return (
     <View style={styles.container}>
-      <Text style={styles.title}>Your Workouts</Text>
+      {/* Top Card */}
+      <View style={styles.statsCard}>
+        <Text style={styles.statsTitle}>Personal Pain</Text>
+        <View style={styles.statsContent}>
+          <View style={styles.statItem}>
+            <Text style={styles.statValue}>{totalWorkouts}</Text>
+            <Text style={styles.statLabel}>Total Workouts</Text>
+          </View>
+          <View style={styles.statItem}>
+            <Text style={styles.statValue}>{totalWeightMoved} lbs</Text>
+            <Text style={styles.statLabel}>Total Weight Moved</Text>
+          </View>
+        </View>
+      </View>
+
+      {/* Scrollable Calendar */}
+      <FlatList
+        data={dates}
+        keyExtractor={(item) => item}
+        renderItem={renderDate}
+        horizontal
+        showsHorizontalScrollIndicator={false}
+        contentContainerStyle={styles.calendarContainer}
+      />
+
+      {/* Workout List */}
       <FlatList
         data={userWorkouts}
         keyExtractor={(item) => item.id.toString()}

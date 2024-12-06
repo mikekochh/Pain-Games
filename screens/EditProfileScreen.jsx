@@ -10,7 +10,6 @@ const EditProfileScreen = ({ navigation }) => {
 
   const handleSave = () => {
     const gender = isMale ? 'Male' : 'Female';
-    console.log('Updated Profile:', { name, weight, height, gender });
     navigation.goBack();
   };
 

@@ -157,4 +157,80 @@ export default StyleSheet.create({
         textShadowRadius: 3,
         textAlign: 'center'
     },
+    statsCard: {
+      padding: 16,
+      backgroundColor: '#E63946',
+      borderRadius: 8,
+      marginBottom: 16,
+      marginTop: 30,
+      marginHorizontal: 10,
+      shadowColor: '#000',
+      shadowOpacity: 0.1,
+      shadowOffset: { width: 0, height: 2 },
+      shadowRadius: 4,
+      elevation: 2,
+      alignItems: 'flex-start', // Align title to the top-left
+    },
+    statsTitle: {
+      fontSize: 35, // Larger font size
+      fontWeight: 'bold', // Bold text
+      color: 'white',
+      marginBottom: 16, // Space between title and stats
+      width: '50%',
+      textAlign: 'left',
+    },
+    statsContent: {
+      flexDirection: 'row',
+      justifyContent: 'space-between',
+      width: '100%', // Ensure stats span the card width
+    },
+    statItem: {
+      alignItems: 'center',
+      flex: 1, // Ensure equal space for each column
+    },
+    statValue: {
+      fontSize: 20,
+      fontWeight: 'bold',
+      color: 'black',
+    },
+    statLabel: {
+      fontSize: 14,
+      color: 'black',
+    },    
+    calendarContainer: {
+      marginVertical: 16,
+    },
+    dateItem: {
+      width: 60, // Fixed width
+      height: 60, // Fixed height
+      marginHorizontal: 5,
+      alignItems: 'center',
+      justifyContent: 'center', // Center content vertically
+      borderRadius: 30, // Half of width/height for a perfect circle
+      backgroundColor: '#aaaaaa',
+      shadowColor: '#000',
+      shadowOpacity: 0.1,
+      shadowOffset: { width: 0, height: 2 },
+      shadowRadius: 4,
+      elevation: 2,
+    },
+    
+    selectedDateItem: {
+      backgroundColor: '#dddddd',
+    },
+    dateText: {
+      fontSize: 16,
+      color: '#000000',
+    },
+    selectedDateText: {
+      color: 'black',
+      fontWeight: 'bold',
+    },
+    dateLabel: {
+      fontSize: 12,
+      color: '#666',
+    },
+    selectedDateLabel: {
+      color: '#000000',
+    },
 });

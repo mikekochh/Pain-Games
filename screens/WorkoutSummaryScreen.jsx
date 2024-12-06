@@ -37,8 +37,7 @@ const WorkoutSummaryScreen = ({ navigation, route }) => {
       const response = await axios.get(
         `${API_BASE_URL}/api/workout/fetchWorkoutData/${workoutID}`
       );
-
-      console.log("response: ", response.data.data[0]);
+      
       setWorkoutData(response.data.data[0]);
     };
 

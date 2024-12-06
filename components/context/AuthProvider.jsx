@@ -10,10 +10,8 @@ export const AuthContext = createContext(null);
 export const AuthProvider = ({ children }) => {
   const [user, setUser] = useState(null);
   const [loading, setLoading] = useState(false);
-  const [workout, setWorkout] = useState(null);
 
   const checkLoginStatus = async () => {
-    console.log("checkLoginStatus running...");
     try {
       const username = await AsyncStorage.getItem('username') || '';
       const id = await AsyncStorage.getItem('id') || '';
@@ -34,47 +32,6 @@ export const AuthProvider = ({ children }) => {
     });
   }
 
-  const startWorkout = async (navigation) => {
-    console.log("starting new workout...");
-    if (!user) {
-      Alert.alert("Please sign in or create an account to continue");
-      return;
-    }
-
-    try {
-
-      console.log("userID: ", user.id);
-
-      const response = await fetch(API_BASE_URL + API_WORKOUTS_ENDPOINT, {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({
-          userID: user.id,
-          inProgress: true
-        }),
-      });
-
-      if (response.ok) {
-        const data = await response.json();
-        console.log("data: ", data);
-        setWorkout({
-          workoutID: data._id,
-          userID: user.id,
-          inProgress: true
-        });
-        navigation.replace('Workout');
-      } else {
-        const errorData = await response.json();
-        Alert.alert('Starting new workout failed', errorData.message);
-      }
-    } catch (error) {
-      console.error('Error:', error);
-      Alert.alert('Start Workout failed', 'An error occurred during starting workout.');
-    }
-  }
-
   const storeLoginDetails = async (username, id, password) => {
     try {
       await AsyncStorage.setItem('username', username);
@@ -86,7 +43,6 @@ export const AuthProvider = ({ children }) => {
   }
 
   const handleLogin = async (username, password, navigation) => {
-    console.log("logging in...");
     setLoading(true);
 
     if (username.trim() === '') {
@@ -106,17 +62,12 @@ export const AuthProvider = ({ children }) => {
         password: password,
       });
 
-      console.log("response from logging in: ", response.data.success);
-
       if (response.data.success) {
-        console.log("are we getting here?");
         setUser({
           id: response.data.user.id,
           username: username,
           email: response.data.user.email,
         });
-
-        console.log("response.data.user.id: ", response.data.user.id)
 
         await storeLoginDetails(username, response.data.user.id, password);
       } else {
@@ -158,8 +109,6 @@ export const AuthProvider = ({ children }) => {
     });
 
     if (response.status === 200 && response.data.success) {
-      console.log("response: ", response);
-      console.log("response.data: ", response.data);
       const userId = response.data.userId;
 
       handleLoginShort(username, userId);
@@ -175,7 +124,6 @@ export const AuthProvider = ({ children }) => {
   const handleLogout = async (navigation) => {
     try {
       setUser(null);
-      setWorkout(null);
 
       await AsyncStorage.removeItem('username');
       await AsyncStorage.removeItem('password');
@@ -192,9 +140,6 @@ export const AuthProvider = ({ children }) => {
       handleLogin, 
       handleCreateAccount, 
       handleLogout,
-      workout,
-      startWorkout,
-      setWorkout,
       checkLoginStatus
     }}>
       {children}

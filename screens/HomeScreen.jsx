@@ -10,7 +10,6 @@ const HomeScreen = ({ navigation }) => {
   const { user } = useContext(AuthContext) || {};
 
   const handleStartWorkout = () => {
-    console.log("user: ", user);
     startWorkout(user.id);
     navigation.navigate('Workout');
   };

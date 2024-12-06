@@ -26,7 +26,7 @@ const EndWorkoutModal = ({ visible, onClose, onDone }) => {
     }
 
     const handleFinishWorkout = () => {
-      // onDone();
+      onDone();
       endWorkout(totalVolume, user.id);
     }
 

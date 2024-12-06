@@ -28,10 +28,6 @@ const ArenaScreen = () => {
     fetchAllUsers();
   }, [])
 
-  useEffect(() => {
-    console.log("allUsers: ", allUsers[0]);
-  }, [allUsers])
-
   // Handle adding a friend
   const addFriend = (user) => {
     setFriends((prevFriends) => [...prevFriends, user]);

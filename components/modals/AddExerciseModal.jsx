@@ -33,22 +33,20 @@ const AddExerciseModal = ({ visible, onClose, exercise, onSave }) => {
       const userID = user.id;
       const exerciseID = exercise.id;
 
-      const response = await axios.get(`${API_BASE_URL}/api/user/fetchExerciseMax`, {
-        params: {
-          userID,
-          exerciseID
+      if (exerciseID) {
+        const response = await axios.get(`${API_BASE_URL}/api/user/fetchExerciseMax`, {
+          params: {
+            userID,
+            exerciseID
+          }
+        });
+  
+        if (response.data.data) {
+          setMaxWeight(response.data.data.weight_max);
         }
-      });
-
-      console.log("response: ", response);
-
-      console.log("response: ", response.data.data);
-
-      if (response.data.data) {
-        setMaxWeight(response.data.data.weight_max);
-      }
-      else {
-        setMaxWeight(null);
+        else {
+          setMaxWeight(null);
+        }
       }
     };
 
@@ -56,21 +54,20 @@ const AddExerciseModal = ({ visible, onClose, exercise, onSave }) => {
       const userID = user.id;
       const exerciseID = exercise.id;
 
-      const response = await axios.get(`${API_BASE_URL}/api/user/fetchUserPR`, {
-        params: {
-          userID,
-          exerciseID
+      if (exerciseID) {
+        const response = await axios.get(`${API_BASE_URL}/api/user/fetchUserPR`, {
+          params: {
+            userID,
+            exerciseID
+          }
+        });
+  
+        if (response.data.data) {
+          setUserPR(response.data.data.weight);
         }
-      });
-
-      console.log("response: ", response);
-      console.log("response: ", response.data.data);
-
-      if (response.data.data) {
-        setUserPR(response.data.data.weight);
-      }
-      else {
-        setUserPR(null);
+        else {
+          setUserPR(null);
+        }
       }
     }
 
@@ -96,9 +93,12 @@ const AddExerciseModal = ({ visible, onClose, exercise, onSave }) => {
     if (workoutSets.length > 0 && exercise) {
       populateExistingSets();
     }
-    fetchExerciseMax();
-    fetchUserPR();
-  }, [workoutSets, exercise]);
+    if (visible && exercise) {
+      fetchExerciseMax();
+      fetchUserPR();
+    }
+
+  }, [workoutSets, exercise, visible]);
 
   const calculateCurrentTotalVolume = (updatedSets) => {
     const totalVolume = updatedSets.reduce((total, set) => {

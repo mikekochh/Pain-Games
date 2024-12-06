@@ -75,10 +75,14 @@ const WorkoutScreen = ({ navigation }) => {
 
   const handleSave = async (sets) => {
     try {
-      const newSets = sets.filter((set) => set.new);
-
-      const updatedSets = sets.filter((set) => set.updated && !set.new);
-
+      const newSets = sets
+        .filter((set) => set.new)
+        .filter((set) => set.reps !== '' && set.weight !== '');
+      
+      const updatedSets = sets
+        .filter((set) => set.updated && !set.new)
+        .filter((set) => set.reps !== '' && set.weight !== '');
+      
       if (newSets.length > 0) {
         const responseInsert = await axios.post(API_BASE_URL + '/api/workout/addSets', {
           userID: 1,

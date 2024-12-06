@@ -37,7 +37,16 @@ const AddExerciseModal = ({ visible, onClose, exercise, onSave }) => {
         }
       });
 
-      setMaxWeight(response.data.data.weight_max);
+      console.log("response: ", response);
+
+      console.log("response: ", response.data.data);
+
+      if (response.data.data) {
+        setMaxWeight(response.data.data.weight_max);
+      }
+      else {
+        setMaxWeight(0);
+      }
     };
 
     const populateExistingSets = () => {
@@ -111,7 +120,9 @@ const AddExerciseModal = ({ visible, onClose, exercise, onSave }) => {
           </TouchableOpacity>
 
           <Text style={styles.modalTitle}>{exercise?.exercise_name}</Text>
-          <Text style={styles.maxWeightText}>Max Weight: {maxWeight}lbs</Text>
+          {maxWeight > 0 && (
+            <Text style={styles.maxWeightText}>Max Weight: {maxWeight}lbs</Text>
+          )}
 
           <FlatList
             data={sets}

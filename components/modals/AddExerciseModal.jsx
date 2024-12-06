@@ -20,11 +20,13 @@ const AddExerciseModal = ({ visible, onClose, exercise, onSave }) => {
   const [userPR, setUserPR] = useState(null);
   const [currentTotalWeight, setCurrentTotalWeight] = useState(0);
 
-  const [sets, setSets] = useState([
+  const originalSets = [
     { id: 1, reps: '', weight: '', new: true },
     { id: 2, reps: '', weight: '', new: true },
     { id: 3, reps: '', weight: '', new: true },
-  ]);
+  ]
+
+  const [sets, setSets] = useState(originalSets);
 
   useEffect(() => {
     const fetchExerciseMax = async () => {
@@ -84,9 +86,9 @@ const AddExerciseModal = ({ visible, onClose, exercise, onSave }) => {
         })));
       } else {
         setSets([
-          { id: 1, reps: 0, weight: 0, new: true },
-          { id: 2, reps: 0, weight: 0, new: true },
-          { id: 3, reps: 0, weight: 0, new: true },
+          { id: 1, reps: '', weight: '', new: true },
+          { id: 2, reps: '', weight: '', new: true },
+          { id: 3, reps: '', weight: '', new: true },
         ]);
       }
     };
@@ -118,8 +120,8 @@ const AddExerciseModal = ({ visible, onClose, exercise, onSave }) => {
       ...prevSets,
       {
         id: prevSets.length + 1,
-        reps: 0,
-        weight: 0,
+        reps: '',
+        weight: '',
         new: true
       },
     ]);
@@ -133,6 +135,7 @@ const AddExerciseModal = ({ visible, onClose, exercise, onSave }) => {
   const handleOnClose = () => {
     setUserPR(null);
     setMaxWeight(null);
+    setSets(originalSets);
     onClose();
   }
 

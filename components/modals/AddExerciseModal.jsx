@@ -17,6 +17,7 @@ const AddExerciseModal = ({ visible, onClose, exercise, onSave }) => {
   const { workoutSets } = useContext(WorkoutContext) || {};
   const { user } = useContext(AuthContext) || {};
   const [maxWeight, setMaxWeight] = useState(null);
+  const [userPR, setUserPR] = useState(null);
   const [currentTotalWeight, setCurrentTotalWeight] = useState(0);
 
   const [sets, setSets] = useState([
@@ -45,9 +46,31 @@ const AddExerciseModal = ({ visible, onClose, exercise, onSave }) => {
         setMaxWeight(response.data.data.weight_max);
       }
       else {
-        setMaxWeight(0);
+        setMaxWeight(null);
       }
     };
+
+    const fetchUserPR = async () => {
+      const userID = user.id;
+      const exerciseID = exercise.id;
+
+      const response = await axios.get(`${API_BASE_URL}/api/user/fetchUserPR`, {
+        params: {
+          userID,
+          exerciseID
+        }
+      });
+
+      console.log("response: ", response);
+      console.log("response: ", response.data.data);
+
+      if (response.data.data) {
+        setUserPR(response.data.data.weight);
+      }
+      else {
+        setUserPR(null);
+      }
+    }
 
     const populateExistingSets = () => {
       const existingSets = workoutSets.filter((set) => set.exerciseID === exercise.id);
@@ -72,6 +95,7 @@ const AddExerciseModal = ({ visible, onClose, exercise, onSave }) => {
       populateExistingSets();
     }
     fetchExerciseMax();
+    fetchUserPR();
   }, [workoutSets, exercise]);
 
   const calculateCurrentTotalVolume = (updatedSets) => {
@@ -106,22 +130,31 @@ const AddExerciseModal = ({ visible, onClose, exercise, onSave }) => {
     setSets(null);
   };
 
+  const handleOnClose = () => {
+    setUserPR(null);
+    setMaxWeight(null);
+    onClose();
+  }
+
   return (
     <Modal
       animationType="slide"
       transparent={true}
       visible={visible}
-      onRequestClose={onClose}
+      onRequestClose={handleOnClose}
     >
       <View style={styles.modalOverlay}>
         <View style={styles.modalContainer}>
-          <TouchableOpacity style={styles.closeButton} onPress={onClose}>
+          <TouchableOpacity style={styles.closeButton} onPress={handleOnClose}>
             <Text style={styles.closeButtonText}>X</Text>
           </TouchableOpacity>
 
           <Text style={styles.modalTitle}>{exercise?.exercise_name}</Text>
           {maxWeight > 0 && (
             <Text style={styles.maxWeightText}>Max Weight: {maxWeight}lbs</Text>
+          )}
+          {userPR > 0 && (
+            <Text style={styles.maxWeightText}>PR: {userPR}lbs</Text>
           )}
 
           <FlatList

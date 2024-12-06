@@ -74,10 +74,16 @@ export const WorkoutProvider = ({ children }) => {
         //     workoutDuration: pausedWorkoutTime
         // });
 
-        const checkHighestLiftsResponse = await axios.post(`${API_BASE_URL}/api/user/checkHighestLifts`, {
+        console.log("endWorkout running...");
+
+        const checkHighestLiftsResponse = await axios.post(`${API_BASE_URL}/api/user/checkMaxAndPRs`, {
             userID,
             workoutSets
-        })
+        });
+
+        console.log("are we getting here?");
+
+        console.log("checkHighestLiftsResponse: ", checkHighestLiftsResponse);
         
         // setWorkoutID(null);
         // setWorkoutTime(0);

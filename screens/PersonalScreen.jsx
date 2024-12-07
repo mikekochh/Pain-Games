@@ -115,21 +115,31 @@ const PersonalScreen = ({ navigation }) => {
       </View>
 
       {/* Scrollable Calendar */}
-      <FlatList
-        data={dates}
-        keyExtractor={(item) => item}
-        renderItem={renderDate}
-        horizontal
-        showsHorizontalScrollIndicator={false}
-        contentContainerStyle={styles.calendarContainer}
-      />
+      <View>
+        <FlatList
+          data={dates}
+          keyExtractor={(item) => item}
+          renderItem={renderDate}
+          horizontal
+          showsHorizontalScrollIndicator={false}
+          contentContainerStyle={styles.calendarContainer}
+        />
+      </View>
+
 
       {/* Workout List */}
       <FlatList
-        data={userWorkouts}
+        data={userWorkouts?.filter(workout => {
+          const workoutDate = moment(workout.created_at).format('YYYY-MM-DD');
+          console.log("Workout Date:", workoutDate, "Selected Date:", selectedDate); // Debug logs
+          return workoutDate === selectedDate;
+        })}
         keyExtractor={(item) => item.id.toString()}
         renderItem={renderWorkout}
         contentContainerStyle={styles.workoutList}
+        ListEmptyComponent={
+          <Text style={styles.noWorkoutsText}>No workouts for the selected date.</Text>
+        }
       />
     </View>
   );
